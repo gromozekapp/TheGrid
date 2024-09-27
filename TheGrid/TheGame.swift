@@ -98,21 +98,27 @@ struct ContentView: View {
             
             GridView(grid: viewModel.grid)
                 .gesture(
-                    DragGesture(minimumDistance: 0)
+                    DragGesture(minimumDistance: 10)  // Минимальное расстояние для распознавания жеста
                         .onEnded { value in
                             let translation = value.translation
-                            
+
+                            // Пороговое значение для определения направления движения
+                            let threshold: CGFloat = 20.0
+
+                            // Проверяем, в каком направлении движение было сильнее
                             if abs(translation.width) > abs(translation.height) {
-                                if translation.width > 0 {
-                                    viewModel.movePlayer(dx: 1, dy: 0) // Вправо
-                                } else {
-                                    viewModel.movePlayer(dx: -1, dy: 0) // Влево
+                                // Горизонтальное движение
+                                if translation.width > threshold {
+                                    viewModel.movePlayer(dx: 0, dy: 1)  // Вправо
+                                } else if translation.width < -threshold {
+                                    viewModel.movePlayer(dx: 0, dy: -1)  // Влево
                                 }
                             } else {
-                                if translation.height > 0 {
-                                    viewModel.movePlayer(dx: 0, dy: 1) // Вниз
-                                } else {
-                                    viewModel.movePlayer(dx: 0, dy: -1) // Вверх
+                                // Вертикальное движение
+                                if translation.height > threshold {
+                                    viewModel.movePlayer(dx: 1, dy: 0)  // Вниз
+                                } else if translation.height < -threshold {
+                                    viewModel.movePlayer(dx: -1, dy: 0)  // Вверх
                                 }
                             }
                         }
