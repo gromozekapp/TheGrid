@@ -9,20 +9,22 @@
 /* Begin PBXBuildFile section */
 		499A30122CA5E91E00B1AB87 /* TheGridApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 499A30112CA5E91E00B1AB87 /* TheGridApp.swift */; };
 		499A30142CA5E91E00B1AB87 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 499A30132CA5E91E00B1AB87 /* ContentView.swift */; };
-		499A30162CA5E91E00B1AB87 /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = 499A30152CA5E91E00B1AB87 /* Item.swift */; };
 		499A30182CA5E91F00B1AB87 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 499A30172CA5E91F00B1AB87 /* Assets.xcassets */; };
 		499A301B2CA5E91F00B1AB87 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 499A301A2CA5E91F00B1AB87 /* Preview Assets.xcassets */; };
-		499A30222CA5E9A500B1AB87 /* TheGame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 499A30212CA5E9A500B1AB87 /* TheGame.swift */; };
+		499A30222CA5E9A500B1AB87 /* GameViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 499A30212CA5E9A500B1AB87 /* GameViewModel.swift */; };
+		499A30242CA7156800B1AB87 /* GridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 499A30232CA7156800B1AB87 /* GridView.swift */; };
+		499A30262CA715DF00B1AB87 /* CellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 499A30252CA715DF00B1AB87 /* CellView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		499A300E2CA5E91E00B1AB87 /* TheGrid.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TheGrid.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		499A30112CA5E91E00B1AB87 /* TheGridApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TheGridApp.swift; sourceTree = "<group>"; };
 		499A30132CA5E91E00B1AB87 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		499A30152CA5E91E00B1AB87 /* Item.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Item.swift; sourceTree = "<group>"; };
 		499A30172CA5E91F00B1AB87 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		499A301A2CA5E91F00B1AB87 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		499A30212CA5E9A500B1AB87 /* TheGame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TheGame.swift; sourceTree = "<group>"; };
+		499A30212CA5E9A500B1AB87 /* GameViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewModel.swift; sourceTree = "<group>"; };
+		499A30232CA7156800B1AB87 /* GridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridView.swift; sourceTree = "<group>"; };
+		499A30252CA715DF00B1AB87 /* CellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CellView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,9 +58,10 @@
 			isa = PBXGroup;
 			children = (
 				499A30112CA5E91E00B1AB87 /* TheGridApp.swift */,
-				499A30212CA5E9A500B1AB87 /* TheGame.swift */,
+				499A30212CA5E9A500B1AB87 /* GameViewModel.swift */,
 				499A30132CA5E91E00B1AB87 /* ContentView.swift */,
-				499A30152CA5E91E00B1AB87 /* Item.swift */,
+				499A30232CA7156800B1AB87 /* GridView.swift */,
+				499A30252CA715DF00B1AB87 /* CellView.swift */,
 				499A30172CA5E91F00B1AB87 /* Assets.xcassets */,
 				499A30192CA5E91F00B1AB87 /* Preview Content */,
 			);
@@ -144,9 +147,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				499A30142CA5E91E00B1AB87 /* ContentView.swift in Sources */,
-				499A30162CA5E91E00B1AB87 /* Item.swift in Sources */,
+				499A30262CA715DF00B1AB87 /* CellView.swift in Sources */,
 				499A30122CA5E91E00B1AB87 /* TheGridApp.swift in Sources */,
-				499A30222CA5E9A500B1AB87 /* TheGame.swift in Sources */,
+				499A30242CA7156800B1AB87 /* GridView.swift in Sources */,
+				499A30222CA5E9A500B1AB87 /* GameViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

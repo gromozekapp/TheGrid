@@ -5,57 +5,51 @@
 ////  Created by Daniil Zolotarev on 26.09.24.
 ////
 //
-//import SwiftUI
-//import SwiftData
-//
-//struct ContentView: View {
-//    @Environment(\.modelContext) private var modelContext
-//    @Query private var items: [Item]
-//
-//    var body: some View {
-//        NavigationSplitView {
-//            List {
-//                ForEach(items) { item in
-//                    NavigationLink {
-//                        Text("Item at \(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))")
-//                    } label: {
-//                        Text(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))
-//                    }
-//                }
-//                .onDelete(perform: deleteItems)
-//            }
-//            .toolbar {
-//                ToolbarItem(placement: .navigationBarTrailing) {
-//                    EditButton()
-//                }
-//                ToolbarItem {
-//                    Button(action: addItem) {
-//                        Label("Add Item", systemImage: "plus")
-//                    }
-//                }
-//            }
-//        } detail: {
-//            Text("Select an item")
-//        }
-//    }
-//
-//    private func addItem() {
-//        withAnimation {
-//            let newItem = Item(timestamp: Date())
-//            modelContext.insert(newItem)
-//        }
-//    }
-//
-//    private func deleteItems(offsets: IndexSet) {
-//        withAnimation {
-//            for index in offsets {
-//                modelContext.delete(items[index])
-//            }
-//        }
-//    }
-//}
-//
-//#Preview {
-//    ContentView()
-//        .modelContainer(for: Item.self, inMemory: true)
-//}
+import SwiftUI
+
+struct ContentView: View {
+    @StateObject var viewModel = GameViewModel()
+    
+    var body: some View {
+        VStack {
+            Button("New Grid") {
+                viewModel.resetGrid()
+                       }
+            Text(viewModel.isGameWon() ? "You Won!" : "Push the box to the target")
+                .font(.title)
+                .padding()
+            
+            GridView(grid: viewModel.grid)
+                .gesture(
+                    DragGesture(minimumDistance: 10)  // Минимальное расстояние для распознавания жеста
+                        .onEnded { value in
+                            let translation = value.translation
+
+                            // Пороговое значение для определения направления движения
+                            let threshold: CGFloat = 20.0
+
+                            // Проверяем, в каком направлении движение было сильнее
+                            if abs(translation.width) > abs(translation.height) {
+                                // Горизонтальное движение
+                                if translation.width > threshold {
+                                    viewModel.movePlayer(dx: 0, dy: 1)  // Вправо
+                                } else if translation.width < -threshold {
+                                    viewModel.movePlayer(dx: 0, dy: -1)  // Влево
+                                }
+                            } else {
+                                // Вертикальное движение
+                                if translation.height > threshold {
+                                    viewModel.movePlayer(dx: 1, dy: 0)  // Вниз
+                                } else if translation.height < -threshold {
+                                    viewModel.movePlayer(dx: -1, dy: 0)  // Вверх
+                                }
+                            }
+                        }
+                )
+        }
+    }
+}
+
+#Preview {
+    ContentView()
+}
