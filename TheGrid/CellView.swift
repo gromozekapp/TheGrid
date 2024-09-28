@@ -20,7 +20,7 @@ struct CellView: View {
 
     var body: some View {
         Rectangle()
-            .fill(cell.isWall ? Color.black : cell.isTarget ? Color.green : Color.gray)
+            .fill(cell.isWall ? Color.black : cell.isTarget ? Color.green : Color.gray.opacity(0.5))
             .overlay(
                 Group {
                     if cell.hasPlayer {
