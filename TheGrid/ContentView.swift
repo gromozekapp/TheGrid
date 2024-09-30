@@ -16,9 +16,8 @@ struct ContentView: View {
             CameraView()
                 .edgesIgnoringSafeArea(.all)
             VStack {
-                Button("New Grid") {
-                    viewModel.resetGrid()
-                }
+                Text("steps: \(viewModel.score) game without steps: \(viewModel.gamesWithoutMove)")
+                Text("lost game: \(viewModel.lostGame) won game total: \(viewModel.countWin)")
                 Text(viewModel.isGameWon() ? "You Won!" : "Push the box to the target")
                     .font(.title)
                     .padding()
@@ -50,6 +49,15 @@ struct ContentView: View {
                                 }
                             }
                     )
+                    .shadow(radius: 20)
+                    .padding()
+                    Spacer()
+                
+                Button("New Grid") { viewModel.resetGrid() }
+                    .padding()
+                    .background(.red,in: Capsule())
+                    .foregroundStyle(.white)
+                    .padding(5)
             }
         }
     }
