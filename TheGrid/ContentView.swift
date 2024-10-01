@@ -54,6 +54,7 @@ struct ContentView: View {
                     Spacer()
                 
                 Button("New Grid") { viewModel.resetGrid() }
+                    .shadow(radius: 20)
                     .padding()
                     .background(.red,in: Capsule())
                     .foregroundStyle(.white)

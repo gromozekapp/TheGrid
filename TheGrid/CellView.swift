@@ -16,21 +16,37 @@ struct Cell {
 }
 
 struct CellView: View {
+    @StateObject var viewModel = GameViewModel()
     let cell: Cell
 
     var body: some View {
         Rectangle()
-            .fill(cell.isWall ? Color.black : cell.isTarget ? Color.green : Color.gray.opacity(0.5))
+            .fill(cell.isTarget ? Color.green : Color.gray.opacity(0.5))
             .overlay(
                 Group {
                     if cell.hasPlayer {
-                        Circle().fill(Color.blue)
+                        Circle().fill(Color.gray.opacity(0.5))
+                        Text("🐔").font(.custom("Georgia",size: 50, relativeTo: .body))
                     } else if cell.hasBox {
-                        Rectangle().fill(Color.orange)
+                        Rectangle().fill(Color.gray.opacity(0.5))
+                        Text("🥚").font(.custom("Georgia",size: 40, relativeTo: .body))
+                    }
+                    if cell.isWall {
+                        Rectangle().fill(Color.gray.opacity(0.5))
+                        Text("🪨").font(.custom("Georgia",size: 45, relativeTo: .body))
+                    }
+                    if cell.isTarget {
+                        Rectangle().fill(Color.gray.opacity(0.5))
+                        if viewModel.isGameWon() {
+                            Text("🪺").font(.custom("Georgia",size: 50, relativeTo: .body))
+                        } else {
+                            Text("🪹").font(.custom("Georgia",size: 50, relativeTo: .body))
+                        }
                     }
                 }
             )
             .frame(width: 50, height: 50)
+       
     }
 }
 
