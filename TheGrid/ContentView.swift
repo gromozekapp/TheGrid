@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ContentView: View {
     @StateObject var viewModel = GameViewModel()
+    var camera = CameraViewController()
     
     var body: some View {
         ZStack {
@@ -51,14 +52,23 @@ struct ContentView: View {
                     )
                     .shadow(radius: 20)
                     .padding()
-                    Spacer()
+                Spacer()
                 
-                Button("New Grid") { viewModel.resetGrid() }
-                    .shadow(radius: 20)
-                    .padding()
-                    .background(.red,in: Capsule())
-                    .foregroundStyle(.white)
-                    .padding(5)
+                HStack {
+                    Button("New Grid") { viewModel.resetGrid() }
+                        .shadow(radius: 20)
+                        .padding()
+                        .background(.red,in: Capsule())
+                        .foregroundStyle(.white)
+                        .padding(5)
+                    
+                    Button("camera") { camera.makeShot() }
+                        .shadow(radius: 20)
+                        .padding()
+                        .background(.blue,in: Capsule())
+                        .foregroundStyle(.white)
+                        .padding(5)
+                }
             }
         }
     }

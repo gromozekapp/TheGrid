@@ -24,11 +24,11 @@ final class GameViewModel: ObservableObject {
         resetGrid()
         // Устанавливаем игрока и объект в начальные позиции
         if playerPosition.x == 0 && playerPosition.y == 0 {
-            grid[1][1].hasPlayer = true
-            playerPosition = (1, 1)
+            grid[0][0].hasPlayer = true
+            playerPosition = (0, 0)
             
-            grid[2][2].hasBox = true
-            grid[4][4].isTarget = true
+            grid[0][2].hasBox = true
+            grid[0][4].isTarget = true
         }
     }
     
@@ -44,11 +44,26 @@ final class GameViewModel: ObservableObject {
         
         if grid.isEmpty {
             grid = Array(repeating: Array(repeating: Cell(), count: gridSize), count: gridSize)
-            // Пример расставления стен (можно сделать по-своему)
-            grid[1][3].isWall = true
-            grid[2][3].isWall = true
-            grid[3][3].isWall = true
+            // Пример расставления стен (welcome screen)
+            grid[1][0].isWall = true
+            grid[2][0].isWall = true
+            grid[3][0].isWall = true
+            grid[4][0].isWall = true
+            grid[5][0].isWall = true
+            
+            grid[3][1].isWall = true
+            
+            grid[1][2].isWall = true
+            grid[2][2].isWall = true
+            grid[3][2].isWall = true
+            grid[4][2].isWall = true
+            grid[5][2].isWall = true
+            
+            grid[1][4].isWall = true
+            grid[2][4].isWall = true
             grid[3][4].isWall = true
+            grid[4][4].isWall = true
+            grid[5][4].isWall = true
         } else {
             grid = Array(repeating: Array(repeating: Cell(), count: gridSize), count: gridSize)
             // Заполнение поля стенами и пустыми ячейками

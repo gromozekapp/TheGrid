@@ -24,6 +24,18 @@ struct CellView: View {
             .fill(cell.isTarget ? Color.green : Color.gray.opacity(0.5))
             .overlay(
                 Group {
+                    if cell.isWall {
+                    Rectangle().fill(Color.gray.opacity(0.5))
+                    Text("🪨").font(.custom("Georgia",size: 45, relativeTo: .body))
+                }
+                if cell.isTarget {
+                    Rectangle().fill(Color.gray.opacity(0.5))
+                    if viewModel.isGameWon() {
+                        Text("🪺").font(.custom("Georgia",size: 50, relativeTo: .body))
+                    } else {
+                        Text("🪹").font(.custom("Georgia",size: 50, relativeTo: .body))
+                    }
+                }
                     if cell.hasPlayer {
                         Circle().fill(Color.gray.opacity(0.5))
                         Text("🐔").font(.custom("Georgia",size: 50, relativeTo: .body))
@@ -31,18 +43,7 @@ struct CellView: View {
                         Rectangle().fill(Color.gray.opacity(0.5))
                         Text("🥚").font(.custom("Georgia",size: 40, relativeTo: .body))
                     }
-                    if cell.isWall {
-                        Rectangle().fill(Color.gray.opacity(0.5))
-                        Text("🪨").font(.custom("Georgia",size: 45, relativeTo: .body))
-                    }
-                    if cell.isTarget {
-                        Rectangle().fill(Color.gray.opacity(0.5))
-                        if viewModel.isGameWon() {
-                            Text("🪺").font(.custom("Georgia",size: 50, relativeTo: .body))
-                        } else {
-                            Text("🪹").font(.custom("Georgia",size: 50, relativeTo: .body))
-                        }
-                    }
+                   
                 }
             )
             .frame(width: 50, height: 50)

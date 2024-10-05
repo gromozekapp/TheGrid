@@ -6,5 +6,9 @@
 	<string></string>
 	<key>NSCameraUsageDescription</key>
 	<string>I need your camera</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>I need your fotolibrary</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>i need your </string>
 </dict>
 </plist>
