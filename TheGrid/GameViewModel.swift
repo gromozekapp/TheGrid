@@ -34,7 +34,7 @@ final class GameViewModel: ObservableObject {
     
     func resetGrid() {
         // Если игра выиграна
-        if isGameWon() && playerHasMoved { countWin+=1 }
+        //if isGameWon() && playerHasMoved { countWin+=1 }
         // Если игра не выиграна и игрок двигался, увеличиваем счетчик проиграных игр
         if !isGameWon() && playerHasMoved { lostGame+=1 }
         // Если игра не выиграна и игрок не двигался, увеличиваем счетчик игр без хода

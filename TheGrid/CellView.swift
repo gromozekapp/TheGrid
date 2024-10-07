@@ -16,7 +16,7 @@ struct Cell {
 }
 
 struct CellView: View {
-    @StateObject var viewModel = GameViewModel()
+    @StateObject var viewModel = GameViewModel() // Используемый вами ViewModel
     let cell: Cell
 
     var body: some View {
@@ -25,29 +25,34 @@ struct CellView: View {
             .overlay(
                 Group {
                     if cell.isWall {
-                    Rectangle().fill(Color.gray.opacity(0.5))
-                    Text("🪨").font(.custom("Georgia",size: 45, relativeTo: .body))
-                }
-                if cell.isTarget {
-                    Rectangle().fill(Color.gray.opacity(0.5))
-                    if viewModel.isGameWon() {
-                        Text("🪺").font(.custom("Georgia",size: 50, relativeTo: .body))
-                    } else {
-                        Text("🪹").font(.custom("Georgia",size: 50, relativeTo: .body))
+                        Rectangle().fill(Color.gray.opacity(0.5))
+                        Text("🪨").font(.custom("Georgia", size: 45, relativeTo: .body))
                     }
-                }
+                    if cell.isTarget {
+                        Rectangle().fill(Color.gray.opacity(0.5))
+                        if viewModel.isGameWon() {
+                            Text("🪺").font(.custom("Georgia", size: 50, relativeTo: .body))
+                        } else {
+                            Text("🪹").font(.custom("Georgia", size: 50, relativeTo: .body))
+                        }
+                    }
+                    
+                    // Анимация для игрока
                     if cell.hasPlayer {
-                        Circle().fill(Color.gray.opacity(0.5))
-                        Text("🐔").font(.custom("Georgia",size: 50, relativeTo: .body))
+                        Circle()
+                            .fill(Color.gray.opacity(0.5))
+                            .overlay(
+                                Text("🐔").font(.custom("Georgia", size: 50, relativeTo: .body))
+                            )
+                            .transition(.scale) // Появление с масштабированием
                     } else if cell.hasBox {
                         Rectangle().fill(Color.gray.opacity(0.5))
-                        Text("🥚").font(.custom("Georgia",size: 40, relativeTo: .body))
+                        Text("🥚").font(.custom("Georgia", size: 40, relativeTo: .body))
                     }
-                   
                 }
             )
             .frame(width: 50, height: 50)
-       
+            .animation(.easeInOut(duration: 0.3), value: cell.hasPlayer) // Анимация изменений
     }
 }
 

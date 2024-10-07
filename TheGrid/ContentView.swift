@@ -4,12 +4,16 @@
 ////
 ////  Created by Daniil Zolotarev on 26.09.24.
 ////
-//
+
 import SwiftUI
 
 struct ContentView: View {
     @StateObject var viewModel = GameViewModel()
     var camera = CameraViewController()
+    
+    // Состояние для отображения алерта
+    @State private var showAlert = false
+    @State private var alertMessage = ""
     
     var body: some View {
         ZStack {
@@ -19,9 +23,6 @@ struct ContentView: View {
             VStack {
                 Text("steps: \(viewModel.score) game without steps: \(viewModel.gamesWithoutMove)")
                 Text("lost game: \(viewModel.lostGame) won game total: \(viewModel.countWin)")
-                Text(viewModel.isGameWon() ? "You Won!" : "Push the box to the target")
-                    .font(.title)
-                    .padding()
                 
                 GridView(grid: viewModel.grid)
                     .gesture(
@@ -48,6 +49,27 @@ struct ContentView: View {
                                         viewModel.movePlayer(dx: -1, dy: 0)  // Вверх
                                     }
                                 }
+                                
+                                // Проверка на победу после каждого перемещения
+                                if viewModel.isGameWon() {
+                                    // Увеличиваем количество побед
+                                    viewModel.countWin += 1
+                                    
+                                    // Устанавливаем сообщение для алерта и показываем его
+                                    alertMessage = """
+🐓🐓🐓🐓🐓🐓🐓🐓🐓🐓🐓🐓🐓🐓🐓🐓🐓🐓🐓🐓🐓
+🐓 Won! 🐣 saved: \(viewModel.countWin)   🐓
+🐓🐓🐓🐓🐓🐓🐓🐓🐓🐓🐓🐓🐓🐓🐓🐓🐓🐓🐓🐓🐓
+"""
+                                        
+                                    showAlert = true
+                                    
+                                    // Автоматическое скрытие алерта через 2 секунды
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                                        showAlert = false
+                                        viewModel.resetGrid()
+                                    }
+                                }
                             }
                     )
                     .shadow(radius: 20)
@@ -55,22 +77,30 @@ struct ContentView: View {
                 Spacer()
                 
                 HStack {
-                    Button("New Grid") { viewModel.resetGrid() }
+                    Button("NEXT") { viewModel.resetGrid() }
                         .shadow(radius: 20)
                         .padding()
-                        .background(.red,in: Capsule())
-                        .foregroundStyle(.white)
+                        .background(.white, in: Capsule())
+                        .foregroundStyle(.black)
                         .padding(5)
                     
-                    Button("camera") { camera.makeShot() }
+                    Button("CAMERA") { camera.makeShot() }
                         .shadow(radius: 20)
                         .padding()
-                        .background(.blue,in: Capsule())
-                        .foregroundStyle(.white)
+                        .background(.white, in: Capsule())
+                        .foregroundStyle(.black)
                         .padding(5)
                 }
             }
         }
+        // Отображение алерта
+        .alert(isPresented: $showAlert) {
+            Alert(
+                title: Text("🥚 in a 🪺"),
+                message: Text(alertMessage),
+                dismissButton: .default(Text("🥚K"))
+            )
+        }//.font(.system(size: 20, weight: .semibold, design: .rounded))
     }
 }
 

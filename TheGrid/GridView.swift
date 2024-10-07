@@ -24,5 +24,5 @@ struct GridView: View {
 }
 
 #Preview {
-    GridView(grid: Array(repeating: Array(repeating: Cell(), count: 6), count: 8))
+    GridView(grid: Array(repeating: Array(repeating: Cell(), count: 6), count: 6))
 }
