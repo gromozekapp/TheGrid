@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ContentView: View {
     @StateObject var viewModel = GameViewModel()
-    var camera = CameraViewController()
+    @StateObject private var camera = CameraViewController()
     
     // Состояние для отображения алерта
     @State private var showAlert = false
@@ -84,12 +84,23 @@ struct ContentView: View {
                         .foregroundStyle(.black)
                         .padding(5)
                     
-                    Button("CAMERA") { camera.makeShot() }
-                        .shadow(radius: 20)
-                        .padding()
-                        .background(.blue, in: Capsule())
-                        .foregroundStyle(.black)
-                        .padding(5)
+                    Button("CAMERA") {
+                        camera.makeShot()
+                    }
+                    .shadow(radius: 20)
+                    .padding()
+                    .background(.blue, in: Capsule())
+                    .foregroundStyle(.black)
+                    .padding(5)
+                    
+                    Button("SCREENSHOT") {
+                        camera.takeScreenshot()
+                    }
+                    .shadow(radius: 20)
+                    .padding()
+                    .background(.green, in: Capsule())
+                    .foregroundStyle(.black)
+                    .padding(5)
                 }
             }
         }

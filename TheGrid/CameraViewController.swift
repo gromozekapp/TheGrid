@@ -4,256 +4,132 @@
 ////
 ////  Created by Daniil Zolotarev on 28.09.24.
 ////
-//import SwiftUI
-//import AVFoundation
-//
-//class CameraViewController: UIViewController {
-//    
-//    let captureSession = AVCaptureSession()
-//    let photoOutput = AVCapturePhotoOutput()
-//    let cameraQueue = DispatchQueue(label: "CameraQueue")
-//    let photoImageView = UIImageView()
-//    
-//    override func viewDidLoad() {
-//        super.viewDidLoad()
-//        openCamera()
-//        
-//        // Настройка слоя для отображения видео
-//        let previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
-//        previewLayer.videoGravity = .resizeAspectFill
-//        previewLayer.frame = view.layer.bounds
-//        view.layer.addSublayer(previewLayer)
-//    }
-//    
-//    func makeShot() {
-//        cameraQueue.async {
-//                self.captureSession.startRunning()
-//        }
-//        let photoSettings = AVCapturePhotoSettings()
-//        photoSettings.flashMode = .auto
-//        photoOutput.capturePhoto(with: photoSettings, delegate: self)
-//    }
-//    
-//    func openCamera() {
-//        switch AVCaptureDevice.authorizationStatus(for: .video) {
-//            
-//        case .notDetermined:
-//            AVCaptureDevice.requestAccess(for: .video) { granted in
-//                if granted {
-//                    self.setupSession()
-//                }
-//                else {
-//                    print("the user has not granted to the camera")
-//                }
-//            }
-//        case .restricted:
-//            print("somthing went wrong")
-//        case .denied:
-//            print("somthing went wrong")
-//        case .authorized:
-//            setupSession()
-//        @unknown default:
-//            print("somthing went wrong")
-//        }
-//    }
-//    
-//    func setupSession() {
-//        captureSession.beginConfiguration()
-//        
-//        guard let frontCamera = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .front) else { return }
-//        
-//            do {
-//                let input = try AVCaptureDeviceInput(device: frontCamera)
-//                
-//                if captureSession.canAddInput(input) == true {
-//                    captureSession.addInput(input)
-//                }
-//                
-//                guard captureSession.canAddOutput(photoOutput) else { return }
-//                captureSession.addOutput(photoOutput)
-//                
-//            } catch let error {
-//                print("Ошибка при настройке фронтальной камеры: \(error)")
-//            }
-//        
-//        captureSession.commitConfiguration()
-//    
-//        cameraQueue.async {
-//                self.captureSession.startRunning()
-//        }
-//    }
-//}
-////MARK: persistion
-//extension CameraViewController: AVCapturePhotoCaptureDelegate {
-//    func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: (any Error)?) {
-//        if let error = error {
-//            print(error.localizedDescription)
-//            return
-//        }
-//        
-//        guard let imageData = photo.fileDataRepresentation(),
-//              let previewImage = UIImage(data: imageData) else { return }
-//        
-//        photoImageView.image = previewImage
-//        UIImageWriteToSavedPhotosAlbum(previewImage, nil, nil, nil)
-//        cameraQueue.async {
-//            self.captureSession.stopRunning()
-//        }
-//    }
-//}
-//
-////MARK: Представление для интеграции CameraViewController в SwiftUI
-//struct CameraView: UIViewControllerRepresentable {
-//    func makeUIViewController(context: Context) -> CameraViewController {
-//        return CameraViewController()
-//    }
-//
-//    func updateUIViewController(_ uiViewController: CameraViewController, context: Context) {
-//        // Обновления здесь не требуются
-//    }
-//}
-//
 import SwiftUI
 import AVFoundation
 
-class CameraViewController: UIViewController {
-    
+class CameraViewController: NSObject, ObservableObject {
     let captureSession = AVCaptureSession()
     let photoOutput = AVCapturePhotoOutput()
-    let movieOutput = AVCaptureMovieFileOutput()  // Новый объект для записи видео
     let cameraQueue = DispatchQueue(label: "CameraQueue")
-    let photoImageView = UIImageView()
-    var isRecording = false  // Состояние записи
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        openCamera()
-        
-        // Настройка слоя для отображения видео
-        let previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
-        previewLayer.videoGravity = .resizeAspectFill
-        previewLayer.frame = view.layer.bounds
-        view.layer.addSublayer(previewLayer)
+    override init() {
+        super.init()
+        setupSession()
     }
     
     func makeShot() {
-        cameraQueue.async {
-            self.captureSession.startRunning()
-        }
         let photoSettings = AVCapturePhotoSettings()
         photoSettings.flashMode = .auto
-        photoOutput.capturePhoto(with: photoSettings, delegate: self)
-    }
-    
-    func openCamera() {
-        switch AVCaptureDevice.authorizationStatus(for: .video) {
-        case .notDetermined:
-            AVCaptureDevice.requestAccess(for: .video) { granted in
-                if granted {
-                    self.setupSession()
-                } else {
-                    print("The user has not granted access to the camera")
-                }
+        
+        // Проверяем, работает ли сессия
+        if !captureSession.isRunning {
+            cameraQueue.async {
+                self.captureSession.startRunning()
             }
-        case .restricted, .denied:
-            print("Camera access denied")
-        case .authorized:
-            setupSession()
-        @unknown default:
-            print("Unknown camera authorization status")
+        }
+        
+        DispatchQueue.main.async {
+            self.photoOutput.capturePhoto(with: photoSettings, delegate: self)
         }
     }
     
-    func setupSession() {
+    private func setupSession() {
+        // Запрашиваем разрешение на использование камеры
+        AVCaptureDevice.requestAccess(for: .video) { [weak self] granted in
+            guard granted, let self = self else { return }
+            
+            self.cameraQueue.async {
+                self.configureSession()
+            }
+        }
+    }
+    
+    private func configureSession() {
         captureSession.beginConfiguration()
         
-        guard let frontCamera = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .front) else { return }
+        // Настраиваем фронтальную камеру
+        guard let frontCamera = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .front),
+              let input = try? AVCaptureDeviceInput(device: frontCamera) else {
+            print("Не удалось настроить камеру")
+            return
+        }
         
-        do {
-            let input = try AVCaptureDeviceInput(device: frontCamera)
-            if captureSession.canAddInput(input) {
-                captureSession.addInput(input)
-            }
-            
-            // Добавление фото-выхода
-            if captureSession.canAddOutput(photoOutput) {
-                captureSession.addOutput(photoOutput)
-            }
-            
-            // Добавление видео-выхода для записи
-            if captureSession.canAddOutput(movieOutput) {
-                captureSession.addOutput(movieOutput)
-            }
-            
-        } catch {
-            print("Ошибка при настройке фронтальной камеры: \(error)")
+        // Добавляем input и output
+        if captureSession.canAddInput(input) {
+            captureSession.addInput(input)
+        }
+        
+        if captureSession.canAddOutput(photoOutput) {
+            captureSession.addOutput(photoOutput)
         }
         
         captureSession.commitConfiguration()
         
-        cameraQueue.async {
-            self.captureSession.startRunning()
-        }
+        // Запускаем сессию
+        captureSession.startRunning()
     }
     
-    // Функция начала/остановки записи
-    func toggleRecording() {
-        if isRecording {
-            // Остановить запись
-            movieOutput.stopRecording()
-        } else {
-            // Начать запись
-            let outputPath = NSTemporaryDirectory() + "tempMovie.mov"
-            let outputURL = URL(fileURLWithPath: outputPath)
-            movieOutput.startRecording(to: outputURL, recordingDelegate: self)
+    // Добавляем функцию для создания скриншота
+    func takeScreenshot() {
+        guard let window = UIApplication.shared.windows.first else {
+            print("Не удалось получить окно для скриншота")
+            return
         }
-        isRecording.toggle()
+        
+        let renderer = UIGraphicsImageRenderer(bounds: window.bounds)
+        let screenshot = renderer.image { context in
+            window.drawHierarchy(in: window.bounds, afterScreenUpdates: true)
+        }
+        
+        // Сохраняем скриншот в галерею
+        UIImageWriteToSavedPhotosAlbum(screenshot, self, #selector(image(_:didFinishSavingWithError:contextInfo:)), nil)
     }
 }
 
-// MARK: - AVCapturePhotoCaptureDelegate для фото
-
+// MARK: - AVCapturePhotoCaptureDelegate
 extension CameraViewController: AVCapturePhotoCaptureDelegate {
     func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
         if let error = error {
-            print(error.localizedDescription)
+            print("Ошибка при съемке фото: \(error.localizedDescription)")
             return
         }
         
         guard let imageData = photo.fileDataRepresentation(),
-              let previewImage = UIImage(data: imageData) else { return }
-        
-        photoImageView.image = previewImage
-        UIImageWriteToSavedPhotosAlbum(previewImage, nil, nil, nil)
-        
-        cameraQueue.async {
-            self.captureSession.stopRunning()
-        }
-    }
-}
-
-// MARK: - AVCaptureFileOutputRecordingDelegate для видео
-
-extension CameraViewController: AVCaptureFileOutputRecordingDelegate {
-    func fileOutput(_ output: AVCaptureFileOutput, didFinishRecordingTo outputFileURL: URL, from connections: [AVCaptureConnection], error: Error?) {
-        if let error = error {
-            print("Error recording video: \(error.localizedDescription)")
+              let image = UIImage(data: imageData) else {
+            print("Не удалось получить данные изображения")
             return
         }
         
-        // Сохранить видео в фотоальбом
-        UISaveVideoAtPathToSavedPhotosAlbum(outputFileURL.path, nil, nil, nil)
+        // Сохраняем фото в галерею
+        UIImageWriteToSavedPhotosAlbum(image, self, #selector(image(_:didFinishSavingWithError:contextInfo:)), nil)
+    }
+    
+    @objc func image(_ image: UIImage, didFinishSavingWithError error: Error?, contextInfo: UnsafeRawPointer) {
+        if let error = error {
+            print("Ошибка при сохранении: \(error.localizedDescription)")
+        } else {
+            print("Фото успешно сохранено")
+        }
     }
 }
 
-// MARK: - Представление для интеграции CameraViewController в SwiftUI
-
+// MARK: - SwiftUI View
 struct CameraView: UIViewControllerRepresentable {
-    func makeUIViewController(context: Context) -> CameraViewController {
-        return CameraViewController()
+    func makeUIViewController(context: Context) -> UIViewController {
+        let viewController = UIViewController()
+        
+        // Получаем shared instance камеры
+        let cameraController = CameraViewController()
+        
+        // Создаем и настраиваем preview layer
+        let previewLayer = AVCaptureVideoPreviewLayer(session: cameraController.captureSession)
+        previewLayer.videoGravity = .resizeAspectFill
+        previewLayer.frame = viewController.view.layer.bounds
+        
+        viewController.view.layer.addSublayer(previewLayer)
+        
+        return viewController
     }
-
-    func updateUIViewController(_ uiViewController: CameraViewController, context: Context) {
-        // Обновления здесь не требуются
-    }
+    
+    func updateUIViewController(_ uiViewController: UIViewController, context: Context) {}
 }
