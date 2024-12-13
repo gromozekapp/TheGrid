@@ -1,6 +1,8 @@
 **/xcuserdata/**
 *.xcuserstate
 *.xcbkptlist
+*.pbxproj
+
 Support/Configurations/build
 Support/Configurations/fastlane/**/
 Support/Configurations/fastlane/README.md
